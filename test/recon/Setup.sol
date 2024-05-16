@@ -22,9 +22,16 @@ abstract contract Setup is BaseSetup {
 
     function setup() internal virtual override {
         collateral = new ERC20("Collateral", "COLL");
+        debt = new ERC20("Debt", "DEBT");
+        
         mintModule = new MintModule();
         liquidationModule = new LiquidationModule();
         collateralModule = new CollateralModule();
         singleton = new Singleton(collateral, debt, mockOracle, address(collateralModule), address(mintModule), address(liquidationModule));
+
+        debt.rely(address(singleton));
+        
+        collateral.mint(address(this), 1e18);
+        collateral.approve(address(singleton), type(uint256).max);
     }
 }

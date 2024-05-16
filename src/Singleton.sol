@@ -49,16 +49,17 @@ contract Singleton is SharedStorage {
     }
 
     function mint(uint256 amt) external {
-        _executeModule(collateralModule, abi.encodeCall(MintModule.mint, (debt, amt)));
+        _executeModule(mintModule, abi.encodeCall(MintModule.mint, (debt, amt)));
     }
 
     function burn(uint256 amt) external {
-        _executeModule(collateralModule, abi.encodeCall(MintModule.burn, (debt, amt)));
+        _executeModule(mintModule, abi.encodeCall(MintModule.burn, (debt, amt)));
     }
 
     // Check for liquidations
-    function canLiquidate(address target) external {
-        _executeModule(liquidationModule, abi.encodeCall(LiquidationModule.canLiquidate, (oracle, thresholdBPS, target)));
+    function canLiquidate(address target) external returns (bool) {
+        bytes memory returnData = _executeModule(liquidationModule, abi.encodeCall(LiquidationModule.canLiquidate, (oracle, thresholdBPS, target)));
+        return abi.decode(returnData, (bool));
     }
 
     // Credito to: https://github.com/Tapioca-DAO/Tapioca-bar/blob/b1a30b07ec1fd2626a0256f0393edac1e5055ebd/contracts/markets/bigBang/BigBang.sol#L381
