@@ -5,16 +5,26 @@ import {Setup} from "./Setup.sol";
 
 // ghost variables for tracking state variable values before and after function calls
 abstract contract BeforeAfter is Setup {
-// struct Vars {
-//     uint256 counter_number;
-// }
+  struct Vars {
+      bool is_solvent;
+  }
 
-// Vars internal _before;
-// Vars internal _after;
+  Vars internal _before;
+  Vars internal _after;
 
-// function __before() internal {
-// }
+  modifier checkBeforeAfter() {
+    __before();
 
-// function __after() internal {
-// }
+    _;
+
+    __after();
+  }
+
+  function __before() internal {
+    _before.is_solvent = !singleton.canLiquidate(address(this));
+  }
+
+  function __after() internal {
+    _after.is_solvent = !singleton.canLiquidate(address(this));
+  }
 }
