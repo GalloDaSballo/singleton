@@ -5,6 +5,7 @@ import {Test} from "forge-std/Test.sol";
 import {TargetFunctions} from "./TargetFunctions.sol";
 import {FoundryAsserts} from "@chimera/FoundryAsserts.sol";
 import "forge-std/console2.sol";
+import {MockOracle} from "src/MockOracle.sol";
 
 contract CryticToFoundry is Test, TargetFunctions, FoundryAsserts {
     function setUp() public {
@@ -20,7 +21,18 @@ contract CryticToFoundry is Test, TargetFunctions, FoundryAsserts {
         // For unit tests we can directly test on the CollateralModule
 
         assertEq(address(singleton.collateral()), address(collateral), "Match");
+        assertEq(address(singleton.debt()), address(debt), "Match");
+
+        assertNotEq(address(singleton.debt()), address(0), "0 d");
+
+
         assertEq(address(singleton.mintModule()), address(mintModule), "Match");
+        assertEq(address(singleton.liquidationModule()), address(liquidationModule), "Match");
+        assertEq(address(singleton.collateralModule()), address(collateralModule), "Match");
+        
+        assertNotEq(address(mintModule), address(0), "0 m");
+        assertNotEq(address(liquidationModule), address(0), "0 l");
+        assertNotEq(address(collateralModule), address(0), "0 c");
     }
 
     function test_mintUnit() public {
@@ -55,5 +67,19 @@ contract CryticToFoundry is Test, TargetFunctions, FoundryAsserts {
         uint256 debt = uint256(collateral) * (75 + multiplier) / 100;
 
         assertTrue(liquidationModule.canLiquidateGivenCollateralAndDebt(price, decimals, treshold, collateral, debt), "Can always liquidate");
+    }
+
+    function test_mintIntegration() public {
+        singleton.mint(1e18);
+    }
+
+    function test_oracleIntegration() public {
+        MockOracle oracle = singleton.oracle();
+        uint256 price = oracle.getPrice();
+        assertTrue(price > 0, "Price non zero");
+    }
+
+    function test_singleton_mint_demo() public {
+        singleton_mint(0);
     }
 }

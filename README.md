@@ -7,3 +7,5 @@
 - Get the TargetFunctions
 - Run our invariant test
 - Campaigns -> Automatically run fuzzing jobs on PR
+
+Push
