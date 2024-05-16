@@ -8,7 +8,7 @@ import {ERC20} from "./ERC20.sol";
 // We don't delegate to this
 contract MockOracle {
     // TODO: Allow for reverts, for fun
-    uint256 public getPrice;
+    uint256 public getPrice = 1e18;
     uint256 public lastUpdated;
     uint256 public constant DECIMALS = 18;
 

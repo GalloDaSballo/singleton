@@ -5,6 +5,7 @@ import {Test} from "forge-std/Test.sol";
 import {TargetFunctions} from "./TargetFunctions.sol";
 import {FoundryAsserts} from "@chimera/FoundryAsserts.sol";
 import "forge-std/console2.sol";
+import {MockOracle} from "src/MockOracle.sol";
 
 contract CryticToFoundry is Test, TargetFunctions, FoundryAsserts {
     function setUp() public {
@@ -70,5 +71,15 @@ contract CryticToFoundry is Test, TargetFunctions, FoundryAsserts {
 
     function test_mintIntegration() public {
         singleton.mint(1e18);
+    }
+
+    function test_oracleIntegration() public {
+        MockOracle oracle = singleton.oracle();
+        uint256 price = oracle.getPrice();
+        assertTrue(price > 0, "Price non zero");
+    }
+
+    function test_singleton_mint_demo() public {
+        singleton_mint(0);
     }
 }

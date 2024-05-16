@@ -46,10 +46,14 @@ contract Singleton is SharedStorage {
     // Withdraw Coll
     function withdraw(uint256 amt) external {
         _executeModule(collateralModule, abi.encodeCall(CollateralModule.withdraw, (collateral, amt)));
+
+        require(!canLiquidate(msg.sender), "Can never self liquidate");
     }
 
     function mint(uint256 amt) external {
         _executeModule(mintModule, abi.encodeCall(MintModule.mint, (debt, amt)));
+        
+        require(!canLiquidate(msg.sender), "Can never self liquidate");
     }
 
     function burn(uint256 amt) external {
@@ -57,7 +61,7 @@ contract Singleton is SharedStorage {
     }
 
     // Check for liquidations
-    function canLiquidate(address target) external returns (bool) {
+    function canLiquidate(address target) public returns (bool) {
         bytes memory returnData = _executeModule(liquidationModule, abi.encodeCall(LiquidationModule.canLiquidate, (oracle, thresholdBPS, target)));
         return abi.decode(returnData, (bool));
     }
